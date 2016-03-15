@@ -1,0 +1,63 @@
+<domain type='kvm'>
+  <name>{{ item.key }}</name>
+  <memory unit='KiB'>{{ item.value.mem }}</memory>
+  <vcpu placement='static'>{{ item.value.cpu }}</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc-i440fx-2.3'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu mode='host-model'>
+    <model fallback='allow'/>
+  </cpu>
+  <devices>
+    <emulator>/usr/bin/qemu-kvm</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='{{ vmdir }}{{ item.key }}.qcow2'/>
+      <target dev='vda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+    </disk>
+{% if item.value.addisk is defined %}
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='{{ vmdir }}{{ item.key }}_addisk.qcow2'/>
+      <target dev='vdb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+    </disk>
+{% endif %}
+    <interface type='network'>
+      <mac address='52:54:00:cc:cc:{{ item.value.mac }}'/>
+      <source network='OSE'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </interface>
+    <serial type='pty'>
+      <target port='0'/>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    <channel type='spicevmc'>
+      <target type='virtio' name='com.redhat.spice.0'/>
+      <address type='virtio-serial' controller='0' bus='0' port='2'/>
+    </channel>
+    <input type='tablet' bus='usb'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <graphics type='spice' autoport='yes'/>
+    <sound model='ich6'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </sound>
+    <video>
+      <model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </video>
+    <redirdev bus='usb' type='spicevmc'>
+    </redirdev>
+    <redirdev bus='usb' type='spicevmc'>
+    </redirdev>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>

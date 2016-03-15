@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+  vars:
+    vmdir: /home/ast/vm/
+    template_disk: rhel7template.qcow2
+    vms:
+      vm8:
+        mac: 08
+        cpu: 1
+        ip: 192.168.133.38
+        mem: 1048576
+      vm9:
+        mac: 99
+        cpu: 2
+        ip: 192.168.133.39
+        mem: 2097152
+        addisk: 20
+
+  tasks:
+  - name: create VM Disks
+    shell: qemu-img create -f qcow2 -b "{{ template_disk }}" "{{ item.key }}".qcow2 chdir="{{ vmdir }}"
+    with_dict: "{{ vms }}"
+
+  - name: inject network-config
+    shell: virt-customize -a  "{{ vmdir }}"/"{{ item.key }}".qcow2 --run-command 'echo "{{ lookup('template', 'ifconfig.j2') }}" > /etc/sysconfig/network-scripts/ifcfg-eth0'
+    with_dict: "{{ vms }}"
+
+  - name: inject hostname
+    shell: virt-customize -a  "{{ vmdir }}"/"{{ item.key }}".qcow2 --run-command 'echo "{{ lookup('template', 'hostname.j2') }}" > /etc/hostname'
+    with_dict: "{{ vms }}"
+
+  - name: create Additional Disks
+    shell: qemu-img create -f qcow2 "{{ item.key }}"_addisk.qcow2 "{{ item.value.addisk }}"G chdir="{{ vmdir }}"
+    when: item.value.addisk is defined
+    with_dict: "{{ vms }}"
+
+  - name: Create VMs
+    virt: name={{ item.key }}
+          command=define
+          xml="{{ lookup('template', 'vm_xml.j2') }}"
+    with_dict: "{{ vms }}"
