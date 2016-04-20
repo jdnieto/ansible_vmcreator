@@ -6,9 +6,15 @@
     <type arch='x86_64' machine='{{ qemu.machine }}'>hvm</type>
     <boot dev='hd'/>
   </os>
+<!--
   <cpu mode='host-model'>
     <model fallback='allow'/>
   </cpu>
+-->
+<cpu mode='custom' match='exact'>
+  <model>SandyBridge</model>
+  <feature policy='require' name='vmx'/>
+</cpu>
   <devices>
     <emulator>/usr/bin/qemu-kvm</emulator>
     <disk type='file' device='disk'>
