@@ -1,55 +1,8 @@
 ---
 - hosts: localhost
-  vars:
-    vmdir: /home/ast/vm/
-    template_disk: rhel7template.qcow2
-    vmnet:
-      basemac: 52:54:00:4e:12
-      gateway: 192.168.133.1
-      dns: 192.168.133.10
-      netmask: 255.255.255.0
-      domain: ose.lan
-    qemu:
-      machine: pc-i440fx-2.3
-    vms:
-      calamari:
-        mac: 00
-        cpu: 1
-        ip: 192.168.133.40
-        mem: 1048576
-      mon1:
-        mac: 01
-        cpu: 1
-        ip: 192.168.133.41
-        mem: 1048576
-      mon2:
-        mac: 02
-        cpu: 1
-        ip: 192.168.133.42
-        mem: 1048576
-      mon3:
-        mac: 03
-        cpu: 1
-        ip: 192.168.133.43
-        mem: 1048576
-      osd1:
-        mac: 05
-        cpu: 2
-        ip: 192.168.133.45
-        mem: 2097152
-        addisk: 20
-      osd2:
-        mac: 06
-        cpu: 2
-        ip: 192.168.133.46
-        mem: 2097152
-        addisk: 20
-      osd3:
-        mac: 07
-        cpu: 2
-        ip: 192.168.133.47
-        mem: 2097152
-        addisk: 20
+  gather_facts: False
+  vars_files:
+  - vars/all.yml
 
   tasks:
 
@@ -58,15 +11,11 @@
     with_dict: "{{ vms }}"
 
   - name: inject network-config
-    shell: virt-customize -a  "{{ vmdir }}"/"{{ item.key }}".qcow2 --run-command 'echo "{{ lookup('template', 'ifconfig.j2') }}" > /etc/sysconfig/network-scripts/ifcfg-eth0'
-    with_dict: "{{ vms }}"
-
-  - name: hostname
-    shell: virt-customize -a  "{{ vmdir }}"/"{{ item.key }}".qcow2 --run-command 'echo "{{ lookup('template', 'hostname.j2') }}" > /etc/hostname'
+    shell: virt-customize -a  "{{ vmdir }}"/"{{ item.key }}".qcow2 --run-command 'echo "{{ lookup('template', 'ifconfig.j2') }}" > /etc/sysconfig/network-scripts/ifcfg-eth0 && echo "{{ lookup('template', 'hostname.j2') }}" > /etc/hostname'
     with_dict: "{{ vms }}"
 
   - name: create Additional Disks
-    shell: qemu-img create -f qcow2 "{{ item.key }}"_addisk.qcow2 "{{ item.value.addisk }}"G chdir="{{ vmdir }}"
+    shell: qemu-img create -f qcow2 "{{ item.key }}"_addisk.qcow2 "{{ item.value.addisk }}"G chdir="{{ diskdir }}"
     when: item.value.addisk is defined
     with_dict: "{{ vms }}"
 
