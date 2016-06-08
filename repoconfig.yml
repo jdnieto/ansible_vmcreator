@@ -13,6 +13,14 @@
     - rhel-server-rhscl-7-rpms.repo
     - rhel-7-server-rh-common-rpms.repo
 
+  - name: create SSH-Keys
+    shell: ssh-keygen -C root@"{{ item.key }}" -t rsa -N '' -f keys/"{{ item.key }}".key
+    with_dict: "{{ vms }}"
+
+  - name: create Autorized Keys
+    shell: cat keys/"{{ item.key }}".key.pub >> keys/autorized.keys
+    with_dict: "{{ vms }}"
+
 - hosts: ose_all
   gather_facts: False
 

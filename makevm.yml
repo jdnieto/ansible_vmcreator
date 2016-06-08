@@ -2,7 +2,8 @@
 - hosts: localhost
   gather_facts: False
   vars_files:
-  - vars/all.yml
+#  - vars/all.yml
+  - vars/x230.yml
 
   tasks:
 

@@ -12,6 +12,7 @@ vmnet:
 qemu:
   machine: pc-i440fx-rhel7.0.0
   cpu: Haswell-noTSX
+  emulator: /usr/libexec/qemu-kvm
 vms:
   rhevh11:
     id: 11
