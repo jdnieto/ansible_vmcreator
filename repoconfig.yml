@@ -13,13 +13,12 @@
     - rhel-server-rhscl-7-rpms.repo
     - rhel-7-server-rh-common-rpms.repo
 
-  - name: create SSH-Keys
-    shell: ssh-keygen -C root@"{{ item.key }}" -t rsa -N '' -f keys/"{{ item.key }}".key
-    with_dict: "{{ vms }}"
+  - name: Gen Keyparis
+    shell: ssh-keygen -C root@"{{ inventory_hostname }}" -t rsa -N '' -f /root/.ssh/id_rsa.key
 
-  - name: create Autorized Keys
-    shell: cat keys/"{{ item.key }}".key.pub >> keys/autorized.keys
-    with_dict: "{{ vms }}"
+  - name: fetch PUB keys
+    fetch: src=/root/.ssh/id_rsa.pub dest=keys/{{ inventory_hostname }}.key.pub
+
 
 - hosts: ose_all
   gather_facts: False
