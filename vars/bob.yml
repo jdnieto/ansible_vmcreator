@@ -1,0 +1,29 @@
+vmdir: /home/vm/
+diskdir: /home/vm/
+template_disk: /home/vm/ce7template.qcow2
+vmnet:
+  net: 192.168.20
+  netname: net1
+  basemac: 52:54:00:20:3A
+  gateway: 192.168.20.1
+  dns: 192.168.20.1
+  netmask: 255.255.255.0
+  domain: bob.local
+qemu:
+  machine: pc-i440fx-rhel7.0.0
+  cpu: SandyBridge
+  emulator: /usr/libexec/qemu-kvm
+vms:
+  ose50:
+    id: 50
+    cpu: 2
+    mem: 4194304
+  ose51:
+    id: 51
+    cpu: 2
+    mem: 4194304
+  ose52:
+    id: 52
+    cpu: 2
+    mem: 4194304
+
