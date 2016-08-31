@@ -1,0 +1,28 @@
+vmdir: /vm/
+diskdir: /home/vm/
+template_disk: /vm/template/newtemplate.qcow2
+vmnet:
+  net: 172.27.1
+  netname: admin
+  basemac: 52:54:00:72:01
+  gateway: 172.27.1.254
+  dns: 172.27.1.1
+  netmask: 255.255.255.0
+  domain: admin.lan
+qemu:
+  machine: pc-i440fx-rhel7.0.0
+  cpu: Haswell-noTSX
+vms:
+  rhv4:
+    id: 15
+    cpu: 2
+    mem: 8388608
+  rhevh16:
+    id: 16
+    cpu: 2
+    mem: 16777216
+  rhevh17:
+    id: 17
+    cpu: 2
+    mem: 16777216
+

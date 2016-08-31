@@ -2,7 +2,8 @@
 - hosts: localhost
   gather_facts: False
   vars_files:
-  - vars/all.yml
+#  - vars/ceph.yml
+  - vars/rhv4.yml
 
   tasks:
 

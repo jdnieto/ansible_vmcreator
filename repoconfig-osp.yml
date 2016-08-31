@@ -1,0 +1,23 @@
+---
+- hosts: osp_c
+  gather_facts: False
+
+  tasks:
+  - name : Subscribe Basics
+    get_url: url=http://172.27.1.1/repofiles/{{ item }} dest=/etc/yum.repos.d/{{ item }}
+    with_items:
+    - rhel-7-server-rpms.repo
+    - rhel-7-server-extras-rpms.repo
+    - rhel-7-server-supplementary-rpms.repo
+    - rhel-7-server-optional-rpms.repo
+    - rhel-server-rhscl-7-rpms.repo
+    - rhel-7-server-rh-common-rpms.repo
+
+  - name : Subscribe Openstack
+    get_url: url=http://172.27.1.1/repofiles/{{ item }} dest=/etc/yum.repos.d/{{ item }}
+    with_items:
+    - rhel-7-server-openstack-8-director-rpms.repo
+    - rhel-7-server-openstack-8-optools-rpms.repo
+    - rhel-7-server-openstack-8-rpms.repo
+    - rhel-7-server-openstack-8-tools-rpms.repo
+

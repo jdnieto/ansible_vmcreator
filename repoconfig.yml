@@ -13,6 +13,12 @@
     - rhel-server-rhscl-7-rpms.repo
     - rhel-7-server-rh-common-rpms.repo
 
+#  - name: Gen Keyparis
+#    shell: ssh-keygen -C root@"{{ inventory_hostname }}" -t rsa -N '' -f /root/.ssh/id_rsa.key
+
+  - name: fetch PUB keys
+    fetch: src=/root/.ssh/id_rsa.pub dest=keys/{{ inventory_hostname }}.key.pub
+
 - hosts: ose_all
   gather_facts: False
 

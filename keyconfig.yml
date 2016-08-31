@@ -1,0 +1,9 @@
+---
+- hosts: all
+  gather_facts: False
+  
+  tasks:
+  - name: fetch PUB keys
+    fetch: src=/root/.ssh/id_rsa.key.pub dest=keys/{{ inventory_hostname }}.key.pub flat=yes
+
+
