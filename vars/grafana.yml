@@ -13,16 +13,8 @@ qemu:
   machine: pc-i440fx-rhel7.0.0
   cpu: Haswell-noTSX
 vms:
-  rhv4:
-    id: 15
+  grafana:
+    id: 98
     cpu: 2
     mem: 8388608
-  rhevh16:
-    id: 16
-    cpu: 2
-    mem: 16777216
-  rhevh17:
-    id: 17
-    cpu: 2
-    mem: 16777216
-
+    addisk: 80

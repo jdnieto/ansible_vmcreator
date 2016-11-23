@@ -13,18 +13,10 @@ qemu:
   machine: pc-i440fx-rhel7.0.0
   cpu: Haswell-noTSX
 vms:
-  rhevh11:
-    id: 11
+  rhv4:
+    id: 15
     cpu: 2
-    mem: 16777216
-  rhevh12:
-    id: 12
-    cpu: 2
-    mem: 16777216
-  rhevh13:
-    id: 13
-    cpu: 2
-    mem: 16777216
+    mem: 8388608
   openstack:
     id: 20
     cpu: 2
@@ -32,16 +24,12 @@ vms:
   nova1:
     id: 21
     cpu: 2
-    mem: 16777216
+    mem: 8388608
   nova2:
     id: 22
     cpu: 2
-    mem: 16777216
-  nova3:
-    id: 23
-    cpu: 2
-    mem: 16777216
-  calamari:
+    mem: 8388608
+  rhsc:
     id: 30
     cpu: 2
     mem: 4194304
@@ -99,10 +87,6 @@ vms:
     id: 52
     cpu: 2
     mem: 8388608
-  ose3:
-    id: 53
-    cpu: 2
-    mem: 8388608
   satellite:
     id: 80
     cpu: 4
@@ -112,7 +96,7 @@ vms:
     id: 90
     cpu: 2
     mem: 8388608
-  elk:
-    id: 98
+  tower:
+    id: 60
     cpu: 2
     mem: 8388608

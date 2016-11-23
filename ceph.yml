@@ -28,7 +28,7 @@
   - name: Create individual machine-id
     shell: systemd-machine-id-setup
 
-- hosts: calamari
+- hosts: rhsc
   remote_user: root
 
   tasks:

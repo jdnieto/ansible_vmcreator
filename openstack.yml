@@ -1,0 +1,48 @@
+---
+- hosts: osp_all
+  gather_facts: False
+  remote_user: root
+
+  tasks:
+  - name : Subscribe Basics
+    get_url: url=http://172.27.1.1/repofiles/{{ item }} dest=/etc/yum.repos.d/{{ item }}
+    with_items:
+    - rhel-7-server-rpms.repo
+    - rhel-7-server-extras-rpms.repo
+    - rhel-7-server-supplementary-rpms.repo
+    - rhel-7-server-optional-rpms.repo
+    - rhel-server-rhscl-7-rpms.repo
+    - rhel-7-server-rh-common-rpms.repo
+
+  - name : Subscribe Openstack
+    get_url: url=http://172.27.1.1/repofiles/{{ item }} dest=/etc/yum.repos.d/{{ item }}
+    with_items:
+    - rhel-7-server-openstack-9-optools-rpms.repo
+    - rhel-7-server-openstack-9-rpms.repo
+    - rhel-7-server-openstack-9-tools-rpms.repo
+
+  - name: Update
+    yum: name=* state=latest
+
+  - name: Delete machine-id
+    file: path=/etc/machine-id state=absent
+
+  - name: Create individual machine-id
+    shell: systemd-machine-id-setup
+
+  - name: Disable NW Manager
+    service: name=NetworkManager state=stopped enabled=no
+
+  - name: Enable network.service
+    service: name=network.service state=started enabled=yes
+
+- hosts: osp_c
+  gather_facts: false
+  remote_user: root
+  
+  tasks:
+    - name: Install Packstack
+      yum: name=openstack-packstack state=latest
+
+
+

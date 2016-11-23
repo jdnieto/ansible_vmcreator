@@ -1,7 +1,7 @@
 [ceph_all:children]
 ceph_osd
 ceph_mon
-ceph_calamari
+ceph_rhsc
 
 [ceph_osd]
 osd6
@@ -16,8 +16,8 @@ mon1
 mon2
 mon3
 
-[ceph_calamari]
-calamari
+[ceph_rhsc]
+rhsc
 
 [osp_all:children]
 osp_c
@@ -29,7 +29,6 @@ openstack
 [osp_nova]
 nova1
 nova2
-nova3
 
 [ose_all:children]
 ose_broker

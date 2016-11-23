@@ -26,16 +26,7 @@
   - name : Subscribe Opensshift
     get_url: url=http://172.27.1.1/repofiles/{{ item }} dest=/etc/yum.repos.d/{{ item }}
     with_items:
-    - rhel-7-server-ose-3.1-rpms.repo
-
-- hosts: rhev_h
-  gather_facts: False
-
-  tasks:
-  - name : Subscribe RHEV_H
-    get_url: url=http://172.27.1.1/repofiles/{{ item }} dest=/etc/yum.repos.d/{{ item }}
-    with_items:
-    - rhel-7-server-rhev-mgmt-agent-rpms.repo
+    - rhel-7-server-ose-3.3-rpms.repo
 
 - hosts: osp_all
   gather_facts: False
@@ -44,10 +35,10 @@
   - name : Subscribe Openstack
     get_url: url=http://172.27.1.1/repofiles/{{ item }} dest=/etc/yum.repos.d/{{ item }}
     with_items:
-    - rhel-7-server-openstack-8-director-rpms.repo
-    - rhel-7-server-openstack-8-optools-rpms.repo
-    - rhel-7-server-openstack-8-rpms.repo
-    - rhel-7-server-openstack-8-tools-rpms.repo
+    - rhel-7-server-openstack-9-director-rpms.repo
+    - rhel-7-server-openstack-9-optools-rpms.repo
+    - rhel-7-server-openstack-9-rpms.repo
+    - rhel-7-server-openstack-9-tools-rpms.repo
 
 - hosts: ceph_all
   gather_facts: False
@@ -56,10 +47,16 @@
   - name : Subscribe Ceph
     get_url: url=http://172.27.1.1/repofiles/{{ item }} dest=/etc/yum.repos.d/{{ item }}
     with_items:
-    - rhel-7-server-rhceph-1.3-calamari-rpms.repo
-    - rhel-7-server-rhceph-1.3-installer-rpms.repo
-    - rhel-7-server-rhceph-1.3-mon-rpms.repo
-    - rhel-7-server-rhceph-1.3-osd-rpms.repo
-    - rhel-7-server-rhceph-1.3-tools-rpms.repo
+     - rhel-7-server-rhceph-2-mon-rpms.repo
+     - rhel-7-server-rhceph-2-osd-rpms.repo
+     - rhel-7-server-rhceph-2-tools-rpms.repo
+     - rhel-7-server-rh-common-rpms.repo
+     - rhel-7-server-rhscon-2-agent-rpms.repo
+     - rhel-7-server-rhscon-2-installer-rpms.repo
+     - rhel-7-server-rhscon-2-main-rpms.repo
 
-#Satellite is missing
+#missing:
+#Satellite
+#Tower
+#Dogtag
+#IPA
