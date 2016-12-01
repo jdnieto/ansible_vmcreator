@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  gather_facts: False
+  vars_files:
+  - vars/empty.yml
+
+  tasks:
+
+  - name: create VM Disks
+    shell: qemu-img create -f qcow2  "{{ item.key }}".qcow2 "{{ item.value.disk }}" G  chdir="{{ vmdir }}"
+    with_dict: "{{ vms }}"
+
+  - name: Create VMs
+    virt: name={{ item.key }}
+          command=define
+          xml="{{ lookup('template', 'vm_empty_xml.j2') }}"
+    with_dict: "{{ vms }}"
+
+  - name: Start VMs
+    virt: name={{ item.key }}
+          state=running
+    with_dict: "{{ vms }}"
