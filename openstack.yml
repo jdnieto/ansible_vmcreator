@@ -4,7 +4,7 @@
   remote_user: root
 
   tasks:
-  - name : Subscribe Basics
+  - name: Subscribe Basics
     get_url: url=http://172.27.1.1/repofiles/{{ item }} dest=/etc/yum.repos.d/{{ item }}
     with_items:
     - rhel-7-server-rpms.repo
@@ -39,10 +39,7 @@
 - hosts: osp_c
   gather_facts: false
   remote_user: root
-  
+
   tasks:
     - name: Install Packstack
       yum: name=openstack-packstack state=latest
-
-
-

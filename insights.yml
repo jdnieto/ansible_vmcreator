@@ -1,0 +1,12 @@
+---
+- hosts: ose_all
+  remote_user: root
+
+  tasks:
+
+  - name: Install Insights
+    yum: name=redhat-access-insights state=latest
+
+  - name: Regsiter Insights
+    shell: redhat-access-insights --register
+

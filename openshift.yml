@@ -1,0 +1,56 @@
+---
+- hosts: ose_all
+  remote_user: root
+
+  tasks:
+  - name: Subscribe Basics
+    get_url: url=http://172.27.1.1/repofiles/{{ item }} dest=/etc/yum.repos.d/{{ item }}
+    with_items:
+    - rhel-7-server-rpms.repo
+    - rhel-7-server-extras-rpms.repo
+    - rhel-7-server-supplementary-rpms.repo
+    - rhel-7-server-optional-rpms.repo
+    - rhel-server-rhscl-7-rpms.repo
+    - rhel-7-server-rh-common-rpms.repo
+    - rhel-7-server-ose-3.3-rpms.repo
+
+  - name: copy storage config
+    copy: src=docker-storage-setup dest=/etc/sysconfig/docker-storage-setup
+    notify: docker-storage-setup
+
+  - name: Install Basics
+    yum: name={{ item }} state=latest
+    with_items:
+    - wget
+    - nfs-utils
+    - NetworkManager
+    - git
+    - net-tools
+    - bind-utils
+    - iptables-services
+    - bridge-utils
+    - bash-completion
+    - atomic-openshift-utils
+    - docker
+    notify: restart-service
+
+  - name: Update
+    yum: name=* state=latest
+
+  - name: Delete machine-id
+    file: path=/etc/machine-id state=absent
+
+  - name: Create individual machine-id
+    shell: systemd-machine-id-setup
+
+  - name: Disable network.service
+    service: name=network.service state=stopped enabled=no
+
+  - name: Enable NW Manager
+    service: name=NetworkManager state=started enabled=yes
+
+  handlers:
+  - name: docker-storage-setup
+    shell: docker-storage-setup
+  - name: restart-service
+    service: name=docker state=started enabled=yes

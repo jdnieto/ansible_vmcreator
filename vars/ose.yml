@@ -1,0 +1,39 @@
+vmdir: /vm/
+diskdir: /home/vm/
+template_disk: /vm/template/rhel73template.qcow2
+vmnet:
+  net: 172.27.1
+  netname: admin
+  basemac: 52:54:00:72:01
+  gateway: 172.27.1.254
+  dns: 172.27.1.1
+  netmask: 255.255.255.0
+  domain: admin.lan
+qemu:
+  machine: pc-i440fx-rhel7.0.0
+  cpu: Haswell-noTSX
+vms:
+  openshift:
+    id: 50
+    cpu: 2
+    mem: 4194304
+    addisk: 50
+  ose1:
+    id: 51
+    cpu: 2
+    mem: 4194304
+    addisk: 50
+  ose2:
+    id: 52
+    cpu: 2
+    mem: 4194304
+    addisk: 50
+  ose3:
+    id: 53
+    cpu: 2
+    mem: 4194304
+    addisk: 50
+  etcd:
+    id: 54
+    cpu: 2
+    mem: 4194304

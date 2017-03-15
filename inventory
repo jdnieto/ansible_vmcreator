@@ -33,6 +33,10 @@ nova2
 [ose_all:children]
 ose_broker
 ose_node
+etcd 
+
+[etcd]
+etcd
 
 [ose_broker]
 openshift
