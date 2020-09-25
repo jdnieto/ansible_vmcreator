@@ -1,6 +1,6 @@
 vmdir: /var/lib/libvirt/images/pocs/
 diskdir: /var/lib/libvirt/images/pocs/
-template_disk: /var/lib/libvirt/images/centos8_base_david.qcow2
+template_disk: /var/lib/libvirt/images/pocs/centos8_base_david.qcow2
 vmnet:
   net: 192.168.133
   netname: ELK

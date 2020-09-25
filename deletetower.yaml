@@ -1,37 +1,57 @@
 ---
-- hosts: workstation
+- hosts: all
   gather_facts: False
   become: True
   vars_files:
     - vars/tower.yaml
 
   tasks:
-    - name: Delete VMs
-      virt: 
-        name: "{{ item.key }}"
-        command: destroy
+    - name: Add host to play
+      add_host:
+        hostname: "{{ vmnet.net }}.{{ item.value.id }}"
+        groups:
+          - tower
       loop: "{{ vms | dict2items }}"
-      
-    - name: undefine VMs
-      virt: 
-        name: "{{ item.key }}"
-        command: undefine
-      loop: "{{ vms | dict2items }}"
-      
-    - name: remove VM Disks
-      file: 
-        path: "{{ vmdir }}{{ item.key }}.qcow2" 
-        state: absent
-      loop: "{{ vms | dict2items }}"
+      register: equipo
 
-    - name: remove Additional Disks
-      file: 
-        path: "{{ diskdir }}{{ item.key }}_addisk.qcow2" 
-        state: absent
-      when: item.value.addisk is defined
-      loop: "{{ vms | dict2items }}"
+    - name: debug
+      debug:
+        var: equipo
 
-    - name: remove Network
-      virt_net:
-        name: "{{ vmnet.netname }}"
+    - name: unregister system
+      redhat_subscription:
         state: absent
+      delegate_to: "{{ equipo['results'][0]['add_host']['host_name'] }}"
+    
+    - name: Remove VM
+      when: inventory_hostname == 'workstation'
+      block:
+        - name: Delete VMV
+          virt: 
+            name: "{{ item.key }}"
+            command: destroy
+          loop: "{{ vms | dict2items }}"
+          
+        - name: undefine VMs
+          virt: 
+            name: "{{ item.key }}"
+            command: undefine
+          loop: "{{ vms | dict2items }}"
+          
+        - name: remove VM Disks
+          file: 
+            path: "{{ vmdir }}{{ item.key }}.qcow2" 
+            state: absent
+          loop: "{{ vms | dict2items }}"
+
+        - name: remove Additional Disks
+          file: 
+            path: "{{ diskdir }}{{ item.key }}_addisk.qcow2" 
+            state: absent
+          when: item.value.addisk is defined
+          loop: "{{ vms | dict2items }}"
+
+        - name: remove Network
+          virt_net:
+            name: "{{ vmnet.netname }}"
+            state: absent

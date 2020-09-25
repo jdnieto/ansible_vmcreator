@@ -55,6 +55,45 @@
     - name: wait for boot
       pause:
           seconds: 10
+
+- name: Register Tower
+  hosts: tower
+  remote_user: root
+  gather_facts: false
+  vars_files:
+    - vars/ikyk.yaml
+  tasks:
+    - name: subscribe tower
+      redhat_subscription:
+        username: "{{ rhn_username }}"
+        password: "{{ rhn_password }}"
+        pool_ids: "{{ rhn_pool }}"
+        state: present
+    
+    - name: add ansible repo repo
+      rhsm_repository:
+        name: "{{ ansible_repo }}"
+        state: present
+    
+    - name: install ansible
+      dnf:
+        name: ansible
+        state: latest
+    
+    - name: download tower installer
+      get_url:
+        url: "https://releases.ansible.com/ansible-tower/setup/ansible-tower-setup-latest.tar.gz"
+        dest: "/root/ansible-tower-setup-latest.tar.gz"
+
+    - name: configure that
+      copy:
+        dest: "/root/that.txt"
+        content: "{{ that }}"
+
+    - name: configure instructions
+      copy:
+        dest: "/root/instructions.txt"
+        content: "{{ other_that }}"
           
 - name: Create DNSMASQ
   hosts: tower
@@ -67,7 +106,7 @@
       dnf:
         name: dnsmasq
         state: latest
-        
+
     - name: configure NetworkManager to use dnsmasq
       lineinfile:
         path: /etc/NetworkManager/NetworkManager.conf
