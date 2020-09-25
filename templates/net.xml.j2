@@ -1,0 +1,17 @@
+<network>
+  <name>{{ vmnet.netname }}</name>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <mac address='{{ vmnet.basemac }}:00'/>
+  <domain name='{{ vmnet.domain }}' localOnly='yes'/>
+  <ip address='{{ vmnet.gateway }}' netmask='{{ vmnet.netmask }}'>
+    <dhcp>
+{% for key,value in vms.items() %}
+      <host mac='{{ vmnet.basemac }}:{{ value.id }}' name='{{ key }}.{{ vmnet.domain }}' ip='{{ vmnet.net }}.{{ value.id }}'/>
+{% endfor %}
+    </dhcp>
+  </ip>
+</network>

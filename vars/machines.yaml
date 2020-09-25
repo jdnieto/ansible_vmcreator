@@ -1,19 +1,22 @@
-vmdir: /home/ast/vm/
-diskdir: /home/ast/vm/
-template_disk: /home/ast/vm/rhel7template.qcow2
+vmdir: /var/lib/libvirt/images/pocs/
+diskdir: /var/lib/libvirt/images/pocs/
+template_disk: /var/lib/libvirt/images/centos8_base_david.qcow2
 vmnet:
   net: 192.168.133
-  netname: OSE
+  netname: ELK
   basemac: 52:54:00:4a:12
   gateway: 192.168.133.1
-  dns: 192.168.133.10
   netmask: 255.255.255.0
-  domain: ose.lan
+  domain: elk.lan
 qemu:
   machine: pc-i440fx-2.3
   cpu: SandyBridge
   emulator: /usr/bin/qemu-kvm
 vms:
+  tower:
+    id: 10
+    cpu: 2
+    mem: 4194304
   vm1:
     id: 31
     cpu: 1

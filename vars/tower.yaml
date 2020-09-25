@@ -1,0 +1,19 @@
+vmdir: /var/lib/libvirt/images/pocs/
+diskdir: /var/lib/libvirt/images/pocs/
+template_disk: /var/lib/libvirt/images/centos8_base_david.qcow2
+vmnet:
+  net: 192.168.144
+  netname: TOWER
+  basemac: 52:54:00:4a:13
+  gateway: 192.168.144.1
+  netmask: 255.255.255.0
+  domain: ansible.lan
+qemu:
+  machine: pc-i440fx-2.3
+  cpu: SandyBridge
+  emulator: /usr/bin/qemu-kvm
+vms:
+  tower:
+    id: 10
+    cpu: 2
+    mem: 4194304

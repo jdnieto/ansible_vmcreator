@@ -1,0 +1,59 @@
+---
+- name: Create VMS
+  hosts: workstation
+  gather_facts: False
+  become: True
+  vars_files:
+    - vars/machines.yaml
+
+  tasks:
+    - name: create Network
+      virt_net:
+        command: define
+        name: "{{ vmnet.netname }}"
+        xml: "{{ lookup('template', 'templates/net.xml.j2') }}"
+
+    - name: start Network
+      virt_net:
+        name: "{{ vmnet.netname }}"
+        state: active
+
+    - name: create VM Disks
+      shell: qemu-img create -f qcow2 -b "{{ template_disk }}" "{{ item.key }}".qcow2 chdir="{{ vmdir }}"
+      loop: "{{ vms | dict2items }}"
+      when: item.key != "tower"
+
+    - name: inject network-config
+      shell: >
+        virt-customize -a  "{{ vmdir }}"/"{{ item.key }}".qcow2 
+        --run-command 'echo "{{ item.key }}.{{ vmnet.domain }}"' > /etc/hostname
+      loop: "{{ vms | dict2items }}"
+      when: item.key != "tower"
+
+    - name: create Additional Disks
+      shell: qemu-img create -f qcow2 "{{ item.key }}"_addisk.qcow2 "{{ item.value.addisk }}"G chdir="{{ diskdir }}"
+      when: item.value.addisk is defined and item.key != "tower"
+      loop: "{{ vms | dict2items }}"
+
+    - name: Create VMs
+      virt: 
+        name: "{{ item.key }}"
+        command: define
+        xml: "{{ lookup('template', 'templates/vm_xml.j2') }}"
+      loop: "{{ vms | dict2items }}"
+      when: item.key != "tower"
+
+    - name: Start VMs
+      virt: 
+        name: "{{ item.key }}"
+        state: running
+      loop: "{{ vms | dict2items }}"
+      when: item.key != "tower"
+    
+    - name: add ip to tower
+      shell: >
+         virsh attach-interface --domain {{ item.key }} --type network
+         --source {{ vmnet.netname }} --model virtio
+         --mac {{ vmnet.basemac }}:{{ item.value.id }} --config --live
+      loop: "{{ vms | dict2items }}"
+      when: item.key == "tower"

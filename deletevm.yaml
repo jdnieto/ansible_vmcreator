@@ -1,0 +1,47 @@
+---
+- hosts: workstation
+  gather_facts: False
+  become: True
+  vars_files:
+    - vars/machines.yaml
+
+  tasks:
+    - name: Delete VMs
+      virt: 
+        name: "{{ item.key }}"
+        command: destroy
+      loop: "{{ vms | dict2items }}"
+      when: item.key != "tower"
+
+    - name: undefine VMs
+      virt: 
+        name: "{{ item.key }}"
+        command: undefine
+      loop: "{{ vms | dict2items }}"
+      when: item.key != "tower"
+
+    - name: remove VM Disks
+      file: 
+        path: "{{ vmdir }}{{ item.key }}.qcow2" 
+        state: absent
+      loop: "{{ vms | dict2items }}"
+      when: item.key != "tower"
+
+    - name: remove Additional Disks
+      file: 
+        path: "{{ diskdir }}{{ item.key }}_addisk.qcow2" 
+        state: absent
+      when: item.value.addisk is defined and item.key != "tower"
+      loop: "{{ vms | dict2items }}"
+
+    - name: remove ip from tower
+      shell: >
+         virsh detach-interface --domain {{ item.key }} --type network
+         --mac {{ vmnet.basemac }}:{{ item.value.id }} --config --live
+      loop: "{{ vms | dict2items }}"
+      when: item.key == "tower"
+
+    - name: remove Network
+      virt_net:
+        name: "{{ vmnet.netname }}"
+        state: absent

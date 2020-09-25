@@ -1,0 +1,89 @@
+- name: Create VMS
+  hosts: workstation
+  gather_facts: False
+  become: True
+  vars_files:
+    - vars/tower.yaml
+
+  tasks:
+    - name: create Network
+      virt_net:
+        command: define
+        name: "{{ vmnet.netname }}"
+        xml: "{{ lookup('template', 'templates/net.xml.j2') }}"
+
+    - name: start Network
+      virt_net:
+        name: "{{ vmnet.netname }}"
+        state: active
+
+    - name: create VM Disks
+      shell: qemu-img create -f qcow2 -b "{{ template_disk }}" "{{ item.key }}".qcow2 chdir="{{ vmdir }}"
+      loop: "{{ vms | dict2items }}"
+
+    - name: inject network-config
+      shell: >
+        virt-customize -a  "{{ vmdir }}"/"{{ item.key }}".qcow2 
+        --run-command 'echo "{{ item.key }}.{{ vmnet.domain }}"' > /etc/hostname
+      loop: "{{ vms | dict2items }}"
+
+    - name: create Additional Disks
+      shell: qemu-img create -f qcow2 "{{ item.key }}"_addisk.qcow2 "{{ item.value.addisk }}"G chdir="{{ diskdir }}"
+      when: item.value.addisk is defined
+      loop: "{{ vms | dict2items }}"
+
+    - name: Create VMs
+      virt: 
+        name: "{{ item.key }}"
+        command: define
+        xml: "{{ lookup('template', 'templates/vm_xml.j2') }}"
+      loop: "{{ vms | dict2items }}"
+
+    - name: Start VMs
+      virt: 
+        name: "{{ item.key }}"
+        state: running
+      loop: "{{ vms | dict2items }}"
+
+    - name: Add host to play
+      add_host:
+        hostname: "{{ vmnet.net }}.{{ item.value.id }}"
+        groups:
+          - tower
+      loop: "{{ vms | dict2items }}"
+    
+    - name: wait for boot
+      pause:
+          seconds: 10
+          
+- name: Create DNSMASQ
+  hosts: tower
+  remote_user: root
+  gather_facts: true
+  vars_files:
+    - vars/machines.yaml
+  tasks:
+    - name: install dnsmasq
+      dnf:
+        name: dnsmasq
+        state: latest
+        
+    - name: configure NetworkManager to use dnsmasq
+      lineinfile:
+        path: /etc/NetworkManager/NetworkManager.conf
+        state: present
+        insertafter: '^\[main\]'
+        line: 'dns=dnsmasq'
+    
+    - name: create {{ vmnet.net }}.conf file
+      copy:
+        dest: /etc/NetworkManager/dnsmasq.d/{{ vmnet.netname }}.conf
+        content: |
+          #server={{ ansible_facts['default_ipv4']['gateway']}}
+          server=8.8.8.8
+          server=/{{ vmnet.domain }}/{{ vmnet.gateway }}
+    
+    - name: reload NetworkManager
+      systemd:
+        name: NetworkManager
+        state: reloaded
