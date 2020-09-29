@@ -17,19 +17,15 @@ vms:
     id: 10
     cpu: 2
     mem: 4194304
-  vm1:
+  elasticsearch:
     id: 31
     cpu: 1
     mem: 2097152
-  vm2:
+  logstash:
     id: 32
     cpu: 1
     mem: 2097152
-  vm3:
+  kibana:
     id: 33
-    cpu: 1
-    mem: 2097152
-  vm4:
-    id: 34
     cpu: 1
     mem: 2097152
