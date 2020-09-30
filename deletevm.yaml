@@ -8,38 +8,38 @@
   tasks:
     - name: Delete VMs
       virt: 
-        name: "{{ item.key }}"
+        name: "{{ item.key }}-{{ project }}"
         command: destroy
       loop: "{{ vms | dict2items }}"
-      when: item.key != "tower"
+      when: "'tower' not in item.key"
 
     - name: undefine VMs
       virt: 
-        name: "{{ item.key }}"
+        name: "{{ item.key }}-{{ project }}"
         command: undefine
       loop: "{{ vms | dict2items }}"
-      when: item.key != "tower"
+      when: "'tower' not in item.key"
 
     - name: remove VM Disks
       file: 
         path: "{{ vmdir }}{{ item.key }}.qcow2" 
         state: absent
       loop: "{{ vms | dict2items }}"
-      when: item.key != "tower"
+      when: "'tower' not in item.key"
 
     - name: remove Additional Disks
       file: 
         path: "{{ diskdir }}{{ item.key }}_addisk.qcow2" 
         state: absent
-      when: item.value.addisk is defined and item.key != "tower"
+      when: "item.value.addisk is defined and 'tower' not in item.key"
       loop: "{{ vms | dict2items }}"
 
     - name: remove ip from tower
       shell: >
-         virsh detach-interface --domain {{ item.key }} --type network
+         virsh detach-interface --domain {{ item.key }}-{{ project }} --type network
          --mac {{ vmnet.basemac }}:{{ item.value.id }} --config --live
       loop: "{{ vms | dict2items }}"
-      when: item.key == "tower"
+      when: "'tower' in item.key"
 
     - name: remove Network
       virt_net:

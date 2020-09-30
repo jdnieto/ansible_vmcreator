@@ -1,6 +1,7 @@
 vmdir: /var/lib/libvirt/images/pocs/
 diskdir: /var/lib/libvirt/images/pocs/
 template_disk: /var/lib/libvirt/images/pocs/rhel8_base_david.qcow2
+project: workshop
 vmnet:
   net: 192.168.144
   netname: TOWER

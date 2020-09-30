@@ -1,5 +1,5 @@
 <domain type='kvm'>
-  <name>{{ item.key }}</name>
+  <name>{{ item.key }}-{{ project }}</name>
   <memory unit='KiB'>{{ item.value.mem }}</memory>
   <vcpu placement='static'>{{ item.value.cpu }}</vcpu>
   <os>

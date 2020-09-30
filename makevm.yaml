@@ -21,39 +21,39 @@
     - name: create VM Disks
       shell: qemu-img create -f qcow2 -b "{{ template_disk }}" "{{ item.key }}".qcow2 chdir="{{ vmdir }}"
       loop: "{{ vms | dict2items }}"
-      when: item.key != "tower"
+      when: "'tower' not in item.key"
 
     - name: inject network-config
       shell: >
         virt-customize -a  "{{ vmdir }}"/"{{ item.key }}".qcow2 
         --run-command 'echo "{{ item.key }}.{{ vmnet.domain }}"' > /etc/hostname
       loop: "{{ vms | dict2items }}"
-      when: item.key != "tower"
+      when: "'tower' not in item.key"
 
     - name: create Additional Disks
       shell: qemu-img create -f qcow2 "{{ item.key }}"_addisk.qcow2 "{{ item.value.addisk }}"G chdir="{{ diskdir }}"
-      when: item.value.addisk is defined and item.key != "tower"
+      when: "item.value.addisk is defined and 'tower' not in item.key"
       loop: "{{ vms | dict2items }}"
 
     - name: Create VMs
       virt: 
-        name: "{{ item.key }}"
+        name: "{{ item.key }}-{{ project }}"
         command: define
         xml: "{{ lookup('template', 'templates/vm_xml.j2') }}"
       loop: "{{ vms | dict2items }}"
-      when: item.key != "tower"
+      when: "'tower' not in item.key"
 
     - name: Start VMs
       virt: 
-        name: "{{ item.key }}"
+        name: "{{ item.key }}-{{ project }}"
         state: running
       loop: "{{ vms | dict2items }}"
-      when: item.key != "tower"
+      when: "'tower' not in item.key"
     
     - name: add ip to tower
       shell: >
-         virsh attach-interface --domain {{ item.key }} --type network
+         virsh attach-interface --domain {{ item.key }}-{{ project }} --type network
          --source {{ vmnet.netname }} --model virtio
          --mac {{ vmnet.basemac }}:{{ item.value.id }} --config --live
       loop: "{{ vms | dict2items }}"
-      when: item.key == "tower"
+      when: "'tower' in item.key"

@@ -28,13 +28,13 @@
       block:
         - name: Delete VMV
           virt: 
-            name: "{{ item.key }}"
+            name: "{{ item.key }}-{{ project }}"
             command: destroy
           loop: "{{ vms | dict2items }}"
           
         - name: undefine VMs
           virt: 
-            name: "{{ item.key }}"
+            name: "{{ item.key }}-{{ project }}"
             command: undefine
           loop: "{{ vms | dict2items }}"
           

@@ -34,14 +34,14 @@
 
     - name: Create VMs
       virt: 
-        name: "{{ item.key }}"
+        name: "{{ item.key }}-{{ project }}"
         command: define
         xml: "{{ lookup('template', 'templates/vm_xml.j2') }}"
       loop: "{{ vms | dict2items }}"
 
     - name: Start VMs
       virt: 
-        name: "{{ item.key }}"
+        name: "{{ item.key }}-{{ project }}"
         state: running
       loop: "{{ vms | dict2items }}"
 

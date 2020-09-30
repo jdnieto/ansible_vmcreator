@@ -1,0 +1,20 @@
+---
+- name: Create inventory
+  hosts: workstation
+  gather_facts: False
+  become: True
+  vars_files:
+    - vars/machines.yaml
+  tasks:
+    - name: get VMS
+      virt_net:
+        command: facts
+        name: "{{ vmnet.netname }}"
+      register: network
+
+    - name: add machine
+      add_host:
+        hostname: "{{ item['hostname'] }}.{{ network['ansible_facts']['ansible_libvirt_networks'][vmnet.netname]['domain'] }}"
+        groups: elk
+      loop: "{{ network['ansible_facts']['ansible_libvirt_networks'][vmnet.netname]['dhcp_leases'] }}"
+      when: "'tower' not in item['hostname']"
