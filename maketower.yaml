@@ -54,7 +54,7 @@
     
     - name: wait for boot
       pause:
-          seconds: 10
+          seconds: 15
 
 - name: Register Tower
   hosts: tower
@@ -102,10 +102,16 @@
   vars_files:
     - vars/machines.yaml
   tasks:
-    - name: install dnsmasq
+    - name: install packages
       dnf:
-        name: dnsmasq
+        name: "{{ packages }}"
         state: latest
+      vars:
+        packages:
+          - dnsmasq
+          - tar
+          - vim
+          - python3-libvirt
 
     - name: configure NetworkManager to use dnsmasq
       lineinfile:
